@@ -4,7 +4,7 @@ import Header from './organisms/header'
 function App() {
 
   return (
-   <div className='max-w-sm mx-auto py-10'>
+   <div className='max-w-7xl mx-auto py-10'>
     <Header/>
     <BookList/>
    </div>

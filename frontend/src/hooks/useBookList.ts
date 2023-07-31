@@ -1,15 +1,18 @@
+// useBookList.ts
 import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
-// import { BookInterface as Book } from '../interfaces';
-import { booksListState } from '../state/recoilAtoms';
 import axios from 'axios';
+import useResponsiveItemsPerPage from './useResponsiveItemsPerPage';
+import { booksListState } from '../state/recoilAtoms';
 
 const useBookList = () => {
   const [books, setBooks] = useRecoilState(booksListState);
+  const itemsPerPage = useResponsiveItemsPerPage(); // Use the custom hook for responsive items per page
+  const initialPage = 1; // Initial page number
 
-  const fetchBooks = async () => {
+  const fetchBooks = async (page: number) => {
     try {
-      const response = await axios.get(`http://localhost:4000/books?page=2&limit=2`);
+      const response = await axios.get(`http://localhost:4000/books?page=${page}&limit=${itemsPerPage}`);
       const newBooks = response.data;
 
       // Append the new books to the existing list
@@ -31,7 +34,7 @@ const useBookList = () => {
 
     if (distanceToBottom < threshold) {
       // Load more books when the user is near the bottom
-      fetchBooks();
+      fetchBooks(books.length / itemsPerPage + 1);
     }
   };
 
@@ -43,14 +46,14 @@ const useBookList = () => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [books]);
+  }, [books, itemsPerPage]);
 
-  
+  // Fetch initial books when the hook is called
   useEffect(() => {
-    fetchBooks();
-  }, []);
+    fetchBooks(initialPage);
+  }, [itemsPerPage]);
 
-  
+  // No need to return anything here
 };
 
 export default useBookList;
