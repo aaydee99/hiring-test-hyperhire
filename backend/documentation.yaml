@@ -1,0 +1,136 @@
+openapi: 3.0.0
+info:
+  title: Books API
+  description: CRUD operations for managing books and buying books from the bookstore.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /books:
+    get:
+      summary: Get All Books
+      parameters:
+        - name: itemsPerPage
+          in: query
+          description: Number of books to be displayed per page (default: 10).
+          schema:
+            type: integer
+        - name: pageNumber
+          in: query
+          description: Page number to fetch (default: 1).
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+    post:
+      summary: Create New Book
+      requestBody:
+        description: Book object to be created.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+  /books/{id}:
+    put:
+      summary: Update Book
+      parameters:
+        - name: id
+          in: path
+          description: The unique ID of the book to update.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Book object with updated properties.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+    delete:
+      summary: Delete Book
+      parameters:
+        - name: id
+          in: path
+          description: The unique ID of the book to delete.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+  /books/{id}/buy:
+    post:
+      summary: Buy Book
+      parameters:
+        - name: id
+          in: path
+          description: The unique ID of the book to buy.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Object containing the quantity of books to be purchased.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  minimum: 1
+                  description: The quantity of books to be purchased.
+        responses:
+          '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Book'
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        discountPercentage:
+          type: number
+          minimum: 0
+        price:
+          type: number
+          minimum: 0
+        image:
+          type: string
+        quantity:
+          type: integer
+          minimum: 0
