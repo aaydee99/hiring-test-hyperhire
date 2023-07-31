@@ -18,6 +18,21 @@ class BookService {
   async deleteBook(bookId: string): Promise<BookDocument | null> {
     return BookModel.findByIdAndDelete(bookId).exec();
   }
+  async buyBook(bookId: string, quantity: number): Promise<BookDocument | null> {
+    const book = await BookModel.findById(bookId).exec();
+    if (!book) {
+      throw new Error('Book not found');
+    }
+
+    if (book.quantity < quantity) {
+      throw new Error('Insufficient quantity available for purchase');
+    }
+
+    book.quantity -= quantity;
+    await book.save();
+
+    return book;
+  }
 }
 
 export default BookService;

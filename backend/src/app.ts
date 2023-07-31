@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import connectDB from './db';
-import { getAllBooks, createBook, updateBook, deleteBook } from './controller/book.controller';
+import { getAllBooks, createBook, updateBook, deleteBook, buyBook } from './controller/book.controller';
 const app = express();
 
 // Middleware
@@ -14,6 +14,7 @@ app.get('/books', getAllBooks);
 app.post('/books', createBook);
 app.put('/books/:id', updateBook);
 app.delete('/books/:id', deleteBook);
+app.post('/books/:id/buy', buyBook);
 
 // Connect to MongoDB
 connectDB();

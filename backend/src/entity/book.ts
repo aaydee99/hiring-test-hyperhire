@@ -4,5 +4,6 @@ export interface BookInterface {
     discountPercentage: number;
     price: number;
     image: string;
+    quantity: number; // New property for book quantity
   }
   

@@ -4,17 +4,16 @@ import BookService from '../service/book.service';
 const bookService = new BookService();
 
 export async function getAllBooks(req: Request, res: Response): Promise<void> {
-    try {
-      const itemsPerPage = parseInt(req.query.itemsPerPage as string) || 10; // Default to 10 items per page
-      const pageNumber = parseInt(req.query.pageNumber as string) || 1; // Default to the first page
-  
-      const books = await bookService.getAllBooks(itemsPerPage, pageNumber);
-      res.json(books);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to fetch books' });
-    }
+  try {
+    const itemsPerPage = parseInt(req.query.itemsPerPage as string) || 10; // Default to 10 items per page
+    const pageNumber = parseInt(req.query.pageNumber as string) || 1; // Default to the first page
+
+    const books = await bookService.getAllBooks(itemsPerPage, pageNumber);
+    res.json(books);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch books' });
   }
-  
+}
 
 export async function createBook(req: Request, res: Response): Promise<void> {
   try {
@@ -52,5 +51,21 @@ export async function deleteBook(req: Request, res: Response): Promise<void> {
     }
   } catch (error) {
     res.status(500).json({ message: 'Failed to delete book' });
+  }
+}
+
+export async function buyBook(req: Request, res: Response): Promise<void> {
+  try {
+    const bookId = req.params.id;
+    const quantity = parseInt(req.body.quantity);
+    if (isNaN(quantity) || quantity <= 0) {
+      res.status(400).json({ message: 'Invalid quantity provided' });
+      return;
+    }
+
+    const purchasedBook = await bookService.buyBook(bookId, quantity);
+    res.json(purchasedBook);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message || 'Failed to buy book' });
   }
 }
