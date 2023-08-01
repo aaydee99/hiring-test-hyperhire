@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import BookService from '../service/book.service';
+import { Book } from '../entity/book';
 
 const bookService = new BookService();
 
 export async function getAllBooks(req: Request, res: Response): Promise<void> {
   try {
-    const itemsPerPage = parseInt(req.query.itemsPerPage as string) || 10; // Default to 10 items per page
-    const pageNumber = parseInt(req.query.pageNumber as string) || 1; // Default to the first page
+    const itemsPerPage = parseInt(req.query.itemsPerPage as string) || 10;
+    const pageNumber = parseInt(req.query.pageNumber as string) || 1;
 
     const books = await bookService.getAllBooks(itemsPerPage, pageNumber);
     res.json(books);
@@ -17,7 +18,7 @@ export async function getAllBooks(req: Request, res: Response): Promise<void> {
 
 export async function createBook(req: Request, res: Response): Promise<void> {
   try {
-    const book = req.body;
+    const book = req.body as Book;
     const createdBook = await bookService.createBook(book);
     res.status(201).json(createdBook);
   } catch (error) {
@@ -28,7 +29,7 @@ export async function createBook(req: Request, res: Response): Promise<void> {
 export async function updateBook(req: Request, res: Response): Promise<void> {
   try {
     const bookId = req.params.id;
-    const book = req.body;
+    const book = req.body as Book;
     const updatedBook = await bookService.updateBook(bookId, book);
     if (updatedBook) {
       res.json(updatedBook);
@@ -57,7 +58,7 @@ export async function deleteBook(req: Request, res: Response): Promise<void> {
 export async function buyBook(req: Request, res: Response): Promise<void> {
   try {
     const bookId = req.params.id;
-    const quantity = parseInt(req.body.quantity);
+    const quantity = parseInt(req.body.quantity as string);
     if (isNaN(quantity) || quantity <= 0) {
       res.status(400).json({ message: 'Invalid quantity provided' });
       return;

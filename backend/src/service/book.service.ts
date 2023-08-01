@@ -1,25 +1,36 @@
-import BookModel, { BookDocument } from '../entity/book.model';
-import { BookInterface } from '../entity/book';
-
+import { Book } from '../entity/book';
 class BookService {
-  async getAllBooks(itemsPerPage: number, pageNumber: number): Promise<BookDocument[]> {
-    const skip = (pageNumber - 1) * itemsPerPage;
-    return BookModel.find().skip(skip).limit(itemsPerPage).exec();
+  async getAllBooks(itemsPerPage: number, pageNumber: number): Promise<Book[]> {
+    const offset = (pageNumber - 1) * itemsPerPage;
+    return Book.findAll({ offset, limit: itemsPerPage });
   }
 
-  async createBook(book: BookInterface): Promise<BookDocument> {
-    return BookModel.create(book);
+  async createBook(book: Book): Promise<Book> {
+    return Book.create(book);
   }
 
-  async updateBook(bookId: string, book: BookInterface): Promise<BookDocument | null> {
-    return BookModel.findByIdAndUpdate(bookId, book, { new: true }).exec();
+  async updateBook(bookId: string, updatedBook: Book): Promise<Book | null> {
+    const existingBook = await Book.findByPk(bookId);
+    if (!existingBook) {
+      return null;
+    }
+
+    await existingBook.update(updatedBook);
+    return existingBook;
   }
 
-  async deleteBook(bookId: string): Promise<BookDocument | null> {
-    return BookModel.findByIdAndDelete(bookId).exec();
+  async deleteBook(bookId: string): Promise<Book | null> {
+    const existingBook = await Book.findByPk(bookId);
+    if (!existingBook) {
+      return null;
+    }
+
+    await existingBook.destroy();
+    return existingBook;
   }
-  async buyBook(bookId: string, quantity: number): Promise<BookDocument | null> {
-    const book = await BookModel.findById(bookId).exec();
+
+  async buyBook(bookId: string, quantity: number): Promise<Book | null> {
+    const book = await Book.findByPk(bookId);
     if (!book) {
       throw new Error('Book not found');
     }
